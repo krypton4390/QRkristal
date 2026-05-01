@@ -21,7 +21,7 @@ const CustomizationPanel = ({
   };
 
   return (
-    <div className="w-[420px] glass-morphism h-screen p-10 flex flex-col space-y-12 overflow-y-auto border-l border-white/10 shadow-2xl relative z-50">
+    <div className="w-full lg:w-[420px] glass-morphism h-auto lg:h-screen p-6 lg:p-10 flex flex-col space-y-12 overflow-y-visible lg:overflow-y-auto border-t lg:border-t-0 lg:border-l border-white/10 shadow-2xl relative z-50">
       <div className="space-y-3">
         <div className="inline-flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
           <Settings2 className="w-3 h-3 text-white/50" />

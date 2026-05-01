@@ -179,14 +179,14 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
   const isValid = isUrlValid(url);
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-12 w-full max-w-2xl">
+    <div className="flex flex-col items-center justify-center space-y-8 lg:space-y-12 w-full max-w-2xl mt-16 lg:mt-0 z-10">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className="qr-container group relative"
       >
-        <div className="bg-white p-4 rounded-2xl shadow-inner flex items-center justify-center w-[300px] h-[300px] overflow-hidden [&>canvas]:max-w-full [&>canvas]:h-auto" ref={qrRef} />
+        <div className="bg-white p-4 rounded-2xl shadow-inner flex items-center justify-center w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] overflow-hidden [&>canvas]:max-w-full [&>canvas]:h-auto" ref={qrRef} />
 
         {/* Scannability Indicator */}
         <motion.div 
@@ -202,11 +202,11 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
       </motion.div>
 
       <div className="flex flex-col items-center space-y-6">
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
           <button 
             onClick={() => handleDownload('png')}
             disabled={downloadStatus === 'processing'}
-            className="flex items-center space-x-2 bg-white text-black px-6 py-4 rounded-2xl font-bold hover:bg-white/90 transition-all active:scale-95 shadow-2xl group disabled:opacity-50"
+            className="flex items-center space-x-2 bg-white text-black px-4 py-3 sm:px-6 sm:py-4 rounded-2xl font-bold hover:bg-white/90 transition-all active:scale-95 shadow-2xl group disabled:opacity-50"
           >
             <ImageIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
             <span>PNG</span>
@@ -214,7 +214,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
           <button 
             onClick={() => handleDownload('jpg')}
             disabled={downloadStatus === 'processing'}
-            className="flex items-center space-x-2 bg-white text-black px-6 py-4 rounded-2xl font-bold hover:bg-white/90 transition-all active:scale-95 shadow-2xl group disabled:opacity-50"
+            className="flex items-center space-x-2 bg-white text-black px-4 py-3 sm:px-6 sm:py-4 rounded-2xl font-bold hover:bg-white/90 transition-all active:scale-95 shadow-2xl group disabled:opacity-50"
           >
             <ImageIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
             <span>JPEG</span>
@@ -222,7 +222,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
           <button 
             onClick={() => handleDownload('svg')}
             disabled={downloadStatus === 'processing'}
-            className="flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-4 rounded-2xl font-bold hover:bg-white/20 transition-all active:scale-95 group disabled:opacity-50"
+            className="flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-3 sm:px-6 sm:py-4 rounded-2xl font-bold hover:bg-white/20 transition-all active:scale-95 group disabled:opacity-50"
           >
             <FileText className="w-5 h-5 group-hover:scale-110 transition-transform" />
             <span>SVG</span>
