@@ -23,12 +23,10 @@ function App() {
 
         {/* Top Navigation / Brand */}
         <div className="absolute top-10 left-12 flex items-center space-x-4">
-          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <div className="w-6 h-6 border-[5px] border-black rounded-lg" />
-          </div>
+          <img src="/favicon.png" alt="QR Crystal Logo" className="w-12 h-12 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] object-contain" />
           <div>
-            <h1 className="text-2xl font-black tracking-tighter italic">QRCRAFT</h1>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold -mt-1">Studio Edition</p>
+            <h1 className="text-2xl font-black tracking-tight">QR Crystal</h1>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold -mt-1">Premium Generator</p>
           </div>
         </div>
 
@@ -44,7 +42,6 @@ function App() {
         {/* Footer Credit */}
         <div className="absolute bottom-10 flex flex-col items-center space-y-2">
           <div className="flex items-center space-x-4">
-             <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
              <span className="text-white/20 text-[10px] font-bold tracking-[0.2em] uppercase">Engine Status: Optimal</span>
           </div>
         </div>

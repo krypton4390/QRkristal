@@ -1,4 +1,4 @@
-# ✦ QRCraft — Premium QR Code Generator
+# ✦ QR Crystal — Premium QR Code Generator
 
 A high-performance, studio-grade QR Code Generator with Apple-style minimalism, glassmorphism UI, and real-time customization.
 
@@ -92,5 +92,5 @@ This project is licensed under the MIT License.
 ---
 
 <p align="center">
-  <b>Designed for Excellence</b> · Powered by QRCraft Engine v2.0
+  <b>Designed for Excellence</b> · Powered by QR Crystal Engine v2.0
 </p>
