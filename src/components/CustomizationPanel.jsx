@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link2, Palette, Upload, Settings2, Trash2, ChevronRight } from 'lucide-react';
+import { Link2, Palette, Upload, Settings2, Trash2, History, X } from 'lucide-react';
 
 const CustomizationPanel = ({ 
   url, setUrl, 
@@ -9,6 +9,28 @@ const CustomizationPanel = ({
   logo, setLogo,
   qrStyle, setQrStyle 
 }) => {
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('qr_history');
+    if (savedHistory) setHistory(JSON.parse(savedHistory));
+  }, []);
+
+  useEffect(() => {
+    if (!url || url === 'https://google.com') return;
+    
+    const timeout = setTimeout(() => {
+      setHistory(prev => {
+        const filtered = prev.filter(h => h !== url);
+        const newHistory = [url, ...filtered].slice(0, 5);
+        localStorage.setItem('qr_history', JSON.stringify(newHistory));
+        return newHistory;
+      });
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [url]);
+
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -20,8 +42,13 @@ const CustomizationPanel = ({
     }
   };
 
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('qr_history');
+  };
+
   return (
-    <div className="w-full lg:w-[420px] glass-morphism h-auto lg:h-screen p-6 lg:p-10 flex flex-col space-y-12 overflow-y-visible lg:overflow-y-auto border-t lg:border-t-0 lg:border-l border-white/10 shadow-2xl relative z-50">
+    <div className="w-full lg:w-[420px] glass-morphism h-auto lg:h-screen p-6 lg:p-10 flex flex-col space-y-10 overflow-y-visible lg:overflow-y-auto border-t lg:border-t-0 lg:border-l border-white/10 shadow-2xl relative z-50">
       <div className="space-y-3">
         <div className="inline-flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
           <Settings2 className="w-3 h-3 text-white/50" />
@@ -30,7 +57,7 @@ const CustomizationPanel = ({
         <h2 className="text-4xl font-bold tracking-tighter text-white">Design</h2>
       </div>
 
-      <div className="space-y-10">
+      <div className="space-y-8">
         {/* URL Input */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -39,7 +66,7 @@ const CustomizationPanel = ({
               <span className="text-xs font-bold uppercase tracking-[0.15em]">Content</span>
             </div>
             {url && (
-               <span className="text-[10px] font-bold text-blue-400/80 uppercase">Active</span>
+               <span className="text-[10px] font-bold text-blue-400/80 uppercase tracking-widest">Live Preview</span>
             )}
           </div>
           <div className="group relative">
@@ -53,6 +80,33 @@ const CustomizationPanel = ({
           </div>
         </div>
 
+        {/* Scan History (New Feature) */}
+        {history.length > 0 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-white/40">
+                <History className="w-3 h-3" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Recent Activity</span>
+              </div>
+              <button onClick={clearHistory} className="text-[10px] text-white/20 hover:text-red-400 transition-colors uppercase font-bold tracking-widest flex items-center gap-1">
+                <Trash2 className="w-3 h-3" />
+                Clear
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {history.map((h, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => setUrl(h)}
+                  className="max-w-full truncate px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/40 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all font-bold"
+                >
+                  {h.replace(/^https?:\/\//, '')}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Colors */}
         <div className="space-y-6">
           <div className="flex items-center space-x-2 text-white/70">
@@ -62,7 +116,7 @@ const CustomizationPanel = ({
           
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-3">
-              <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest ml-1">Dots</label>
+              <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest ml-1">Dots Color</label>
               <div className="relative h-16 group">
                 <input 
                   type="color" 
@@ -75,7 +129,7 @@ const CustomizationPanel = ({
             </div>
             
             <div className="space-y-3">
-              <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest ml-1">Background</label>
+              <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest ml-1">BG Color</label>
               <div className="relative h-16 group">
                 <input 
                   type="color" 
@@ -108,7 +162,7 @@ const CustomizationPanel = ({
                   <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Upload className="w-6 h-6 text-white/40 group-hover:text-white/70" />
                   </div>
-                  <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Drop logo here</p>
+                  <p className="text-xs text-white/40 font-bold uppercase tracking-widest">Drop brand logo</p>
                 </div>
                 <input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} />
               </motion.label>
@@ -125,7 +179,7 @@ const CustomizationPanel = ({
                   onClick={() => setLogo(null)}
                   className="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full backdrop-blur-md transition-all shadow-xl hover:scale-110 active:scale-95"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <X className="w-4 h-4" />
                 </button>
               </motion.div>
             )}
@@ -160,7 +214,7 @@ const CustomizationPanel = ({
         <div className="p-6 bg-gradient-to-br from-white/5 to-transparent rounded-3xl border border-white/10">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] mb-4">Pro Tip</p>
           <p className="text-sm text-white/60 leading-relaxed font-medium">
-            Use high-contrast colors and a clear center logo for maximum scannability across all devices.
+            Use high-contrast colors and SVG format for professional printing to ensure 100% scannability.
           </p>
         </div>
       </div>

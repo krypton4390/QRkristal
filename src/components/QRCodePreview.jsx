@@ -179,7 +179,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
   const isValid = isUrlValid(url);
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-8 lg:space-y-12 w-full max-w-2xl mt-16 lg:mt-0 z-10">
+    <div className="flex flex-col items-center justify-center space-y-16 lg:space-y-20 w-full max-w-2xl mt-16 lg:mt-0 z-10">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -192,7 +192,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 whitespace-nowrap"
+          className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 whitespace-nowrap z-20"
         >
           <ShieldCheck className={isValid ? "text-green-400 w-4 h-4" : "text-yellow-400 w-4 h-4"} />
           <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">
@@ -201,7 +201,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
         </motion.div>
       </motion.div>
 
-      <div className="flex flex-col items-center space-y-6">
+      <div className="flex flex-col items-center space-y-6 pt-4">
         <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
           <button 
             onClick={() => handleDownload('png')}
