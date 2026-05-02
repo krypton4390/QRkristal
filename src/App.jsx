@@ -31,8 +31,8 @@ function App() {
             <div className="flex items-center space-x-4">
               <img src="/favicon.png" alt="QR Crystal Logo" className="w-12 h-12 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] object-contain" />
               <div>
-                <h1 className="text-2xl font-black tracking-tight text-white">QR Crystal</h1>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold -mt-1">Premium Generator</p>
+                <h1 className="text-2xl font-black tracking-tight text-white">QR Code Generator</h1>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold -mt-1">by QR Crystal — Free Online Tool</p>
               </div>
             </div>
 
@@ -89,6 +89,27 @@ function App() {
 
       {/* SEO & Content Sections */}
       <div id="content-start">
+        {/* How-To Section — targets "how to create qr code" queries */}
+        <section className="py-24 px-6 lg:px-12 bg-[#0a0a0a] border-t border-white/5">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white">How to Create a QR Code for Free</h2>
+            <p className="text-white/50 text-lg mb-12 max-w-2xl">Generate custom QR codes in seconds with QR Crystal. No signup, no ads, no tracking. Here's how:</p>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { step: '01', title: 'Enter Your URL or Text', desc: 'Paste any link, WiFi credentials, vCard, or plain text into the QR code generator input field.' },
+                { step: '02', title: 'Customize Your Design', desc: 'Pick custom colors, upload your brand logo, and choose between classic or organic dot patterns.' },
+                { step: '03', title: 'Download for Free', desc: 'Export your QR code in PNG, JPEG, or SVG format. Perfect for print, web, or digital marketing.' }
+              ].map((item, i) => (
+                <div key={i} className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all space-y-4">
+                  <span className="text-5xl font-black text-white/10">{item.step}</span>
+                  <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <ContentPillar />
         <FAQSection />
         <TrustSection />
