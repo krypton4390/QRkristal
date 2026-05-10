@@ -17,7 +17,7 @@ const CustomizationPanel = ({
   }, []);
 
   useEffect(() => {
-    if (!url || url === 'https://google.com') return;
+    if (!url || url === 'https://qrcrystal.xyz/') return;
     
     const timeout = setTimeout(() => {
       setHistory(prev => {

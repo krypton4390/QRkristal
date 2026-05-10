@@ -13,7 +13,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
       width: 600,
       height: 600,
       type: 'svg', // Use SVG as the primary rendering type
-      data: url || "https://google.com",
+      data: url || "https://qrcrystal.xyz/",
       image: logo,
       dotsOptions: {
         color: fgColor,
@@ -49,7 +49,7 @@ const QRCodePreview = ({ url, fgColor, bgColor, logo, qrStyle }) => {
   useEffect(() => {
     if (qrCode.current) {
       qrCode.current.update({
-        data: url || "https://google.com",
+        data: url || "https://qrcrystal.xyz/",
         image: logo,
         dotsOptions: {
           color: fgColor,

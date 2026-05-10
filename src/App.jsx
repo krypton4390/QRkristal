@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import QRCodePreview from './components/QRCodePreview';
 import CustomizationPanel from './components/CustomizationPanel';
 import FAQSection from './components/FAQSection';
 import TrustSection from './components/TrustSection';
 import ContentPillar from './components/ContentPillar';
-import BulkGenerator from './components/BulkGenerator';
+import VCardGenerator from './components/VCardGenerator';
+const BulkGenerator = lazy(() => import('./components/BulkGenerator'));
 
 function App() {
-  const [mode, setMode] = useState('single'); // 'single' or 'bulk'
-  const [url, setUrl] = useState('https://google.com');
+  const [mode, setMode] = useState('single'); // 'single', 'bulk', or 'vcard'
+  const [url, setUrl] = useState('https://qrcrystal.xyz/');
   const [fgColor, setFgColor] = useState('#000000');
   const [bgColor, setBgColor] = useState('#ffffff');
   const [logo, setLogo] = useState(null);
@@ -18,7 +19,7 @@ function App() {
     <div className="flex flex-col min-h-screen w-full bg-[#050505] text-white font-sans selection:bg-white selection:text-black scroll-smooth">
       <div className="flex flex-col lg:flex-row lg:h-screen w-full overflow-hidden shrink-0">
         {/* Main Content Area */}
-        <main className="flex-1 relative flex flex-col items-center justify-center p-6 lg:p-12 min-h-[100dvh] lg:min-h-0 overflow-hidden">
+        <main className={`flex-1 relative flex flex-col items-center ${mode === 'vcard' ? 'justify-start overflow-y-auto' : 'justify-center overflow-hidden'} p-6 lg:p-12 min-h-[100dvh] lg:min-h-0`}>
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 rounded-full blur-[150px]" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[120px]" />
@@ -38,22 +39,19 @@ function App() {
 
             {/* Mode Switcher */}
             <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md">
-              <button 
-                onClick={() => setMode('single')}
-                className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === 'single' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
-              >
-                Single
-              </button>
-              <button 
-                onClick={() => setMode('bulk')}
-                className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === 'bulk' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
-              >
-                Bulk
-              </button>
+              {['single', 'bulk', 'vcard'].map((m) => (
+                <button 
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === m ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
+                >
+                  {m === 'vcard' ? 'vCard' : m.charAt(0).toUpperCase() + m.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
 
-          {mode === 'single' ? (
+          {mode === 'single' && (
             <QRCodePreview 
               url={url} 
               fgColor={fgColor} 
@@ -61,8 +59,16 @@ function App() {
               logo={logo} 
               qrStyle={qrStyle}
             />
-          ) : (
-            <BulkGenerator />
+          )}
+          {mode === 'bulk' && (
+            <Suspense fallback={<div className="text-white/30 text-sm font-bold uppercase tracking-widest animate-pulse">Loading Bulk Generator...</div>}>
+              <BulkGenerator />
+            </Suspense>
+          )}
+          {mode === 'vcard' && (
+            <Suspense fallback={<div className="text-white/30 text-sm font-bold uppercase tracking-widest animate-pulse">Loading vCard Generator...</div>}>
+              <VCardGenerator />
+            </Suspense>
           )}
 
 
