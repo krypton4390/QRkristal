@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import * as XLSX from 'xlsx';
 import JSZip from 'jszip';
 import QRCode from 'qrcode';
-import { saveAs } from 'file-saver';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileSpreadsheet, Download, RefreshCcw, CheckCircle2, AlertCircle, Eye } from 'lucide-react';
 
@@ -12,6 +11,17 @@ const BulkGenerator = () => {
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState([]);
   const [error, setError] = useState(null);
+
+  const triggerDownload = (blob, fileName) => {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -90,7 +100,9 @@ const BulkGenerator = () => {
       }
 
       const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, `QR_Crystal_Bulk_${new Date().getTime()}.zip`);
+      const outName = `QR_Crystal_Bulk_${new Date().getTime()}.zip`;
+
+      triggerDownload(content, outName);
       setIsProcessing(false);
     } catch (err) {
       setError("An error occurred during generation.");
@@ -106,7 +118,7 @@ const BulkGenerator = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 lg:p-12 space-y-12">
+    <div className="w-full max-w-4xl mx-auto p-6 lg:p-12 space-y-12 mt-16 lg:mt-12">
       <div className="text-center space-y-4">
         <h2 className="text-4xl lg:text-5xl font-black text-white">Bulk Generator</h2>
         <p className="text-white/40 max-w-xl mx-auto">
@@ -184,17 +196,17 @@ const BulkGenerator = () => {
                 </p>
               </div>
             ) : (
-              <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
                 <button 
                   onClick={generateZip}
-                  className="flex items-center gap-3 bg-white text-black px-8 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white/90 active:scale-95 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
+                  className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white text-black px-8 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white/90 active:scale-95 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
                 >
                   <Download className="w-5 h-5" />
                   Generate & Download ZIP
                 </button>
                 <button 
                   onClick={reset}
-                  className="flex items-center gap-3 bg-white/5 border border-white/10 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all"
+                  className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white/5 border border-white/10 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all"
                 >
                   <RefreshCcw className="w-5 h-5" />
                   Reset

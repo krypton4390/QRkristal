@@ -48,13 +48,13 @@ const CustomizationPanel = ({
   };
 
   return (
-    <div className="w-full lg:w-[420px] glass-morphism h-auto lg:h-screen p-6 lg:p-10 flex flex-col space-y-10 overflow-y-visible lg:overflow-y-auto border-t lg:border-t-0 lg:border-l border-white/10 shadow-2xl relative z-50">
+    <div className="w-full lg:w-[420px] glass-morphism h-auto lg:h-screen p-8 sm:p-10 lg:p-10 flex flex-col space-y-8 sm:space-y-10 overflow-y-visible lg:overflow-y-auto border-t lg:border-t-0 lg:border-l border-white/10 shadow-2xl relative z-50">
       <div className="space-y-3">
         <div className="inline-flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
           <Settings2 className="w-3 h-3 text-white/50" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Configuration</span>
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/50">Configuration</span>
         </div>
-        <h2 className="text-4xl font-bold tracking-tighter text-white">Design</h2>
+        <h2 className="text-3xl sm:text-4xl font-black tracking-tighter text-white">Design</h2>
       </div>
 
       <div className="space-y-8">

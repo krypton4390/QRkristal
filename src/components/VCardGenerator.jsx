@@ -70,6 +70,17 @@ const VCardGenerator = () => {
   const qrRef = useRef(null);
   const qrInstance = useRef(null);
 
+  const triggerDownload = (blob, fileName) => {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
   const update = (key, val) => setForm(prev => ({ ...prev, [key]: val }));
 
   const isFormValid = (form.fullName || '').trim().length > 0 && (form.email || form.whatsapp || form.linkedin || form.instagram || form.youtube);
@@ -87,52 +98,36 @@ const VCardGenerator = () => {
     }
   }, [form.linkedin]);
 
-  // Generate QR code — always creates a fresh instance
-  const handleGenerate = useCallback(() => {
-    const cleanLinkedin = form.linkedin ? sanitizeLinkedIn(form.linkedin).clean : '';
-    const vcard = generateVCard({ ...form, linkedin: cleanLinkedin });
-
+  const refreshQR = (newLogo = form.qrLogo) => {
+    const vcard = generateVCard({ ...form });
+    
+    // RELIABILITY: Create a fresh instance to avoid .update() image loading race conditions
     qrInstance.current = new QRCodeStyling({
       width: 280,
       height: 280,
       type: 'canvas',
       data: vcard,
-      image: form.qrLogo || undefined,
-      dotsOptions: {
-        color: '#1a1a2e',
-        type: 'rounded'
-      },
-      backgroundOptions: {
-        color: '#ffffff'
-      },
-      imageOptions: {
-        crossOrigin: 'anonymous',
-        margin: 8,
-        imageSize: 0.35
-      },
-      cornersSquareOptions: {
-        type: 'extra-rounded',
-        color: '#1a1a2e'
-      },
-      cornersDotOptions: {
-        type: 'dot',
-        color: '#1a1a2e'
-      },
-      qrOptions: {
-        errorCorrectionLevel: 'H'
-      }
+      image: newLogo || undefined,
+      qrOptions: { errorCorrectionLevel: 'H' },
+      dotsOptions: { color: '#1a1a2e', type: 'rounded' },
+      backgroundOptions: { color: '#ffffff' },
+      imageOptions: { margin: 8, imageSize: 0.35, hideBackgroundDots: true },
+      cornersSquareOptions: { type: 'extra-rounded', color: '#1a1a2e' },
+      cornersDotOptions: { type: 'dot', color: '#1a1a2e' }
     });
 
-    setQrGenerated(true);
-  }, [form]);
-
-  // Append QR to DOM on every render after generation (no dep array = always runs)
-  useEffect(() => {
-    if (qrGenerated && qrRef.current && qrInstance.current) {
+    if (qrRef.current) {
       qrRef.current.innerHTML = '';
       qrInstance.current.append(qrRef.current);
     }
-  });
+  };
+
+  const handleGenerate = useCallback(() => {
+    setQrGenerated(true);
+    // Use a small timeout to ensure the DOM ref is ready if it's the first time
+    setTimeout(() => refreshQR(), 50);
+  }, [form]);
+
 
   // Download as PDF Table Tent
   const handleDownloadPDF = async () => {
@@ -232,12 +227,9 @@ const VCardGenerator = () => {
     const cleanLinkedin = form.linkedin ? sanitizeLinkedIn(form.linkedin).clean : '';
     const vcard = generateVCard({ ...form, linkedin: cleanLinkedin });
     const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(form.fullName || 'contact').replace(/\s+/g, '_').toLowerCase()}.vcf`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const outName = `${(form.fullName || 'contact').replace(/\s+/g, '_').toLowerCase()}.vcf`;
+
+    triggerDownload(blob, outName);
   };
 
   // Download QR — generates a fresh hi-res instance for export quality
@@ -257,35 +249,18 @@ const VCardGenerator = () => {
         image: form.qrLogo || undefined,
         dotsOptions: { color: '#1a1a2e', type: 'rounded' },
         backgroundOptions: { color: '#ffffff' },
-        imageOptions: { crossOrigin: 'anonymous', margin: 20, imageSize: 0.35 },
+        imageOptions: { margin: 20, imageSize: 0.35, hideBackgroundDots: true },
         cornersSquareOptions: { type: 'extra-rounded', color: '#1a1a2e' },
         cornersDotOptions: { type: 'dot', color: '#1a1a2e' },
         qrOptions: { errorCorrectionLevel: 'H' }
       });
 
-      if (extension === 'svg') {
-        hiRes.download({ name: `${safeName}_qr`, extension: 'svg' });
-      } else {
-        // Append to an off-screen div to render, then grab data URL
-        const offscreen = document.createElement('div');
-        offscreen.style.position = 'fixed';
-        offscreen.style.left = '-9999px';
-        document.body.appendChild(offscreen);
-        hiRes.append(offscreen);
-        // Wait for canvas to be ready
-        await new Promise(r => setTimeout(r, 300));
-        const canvasEl = offscreen.querySelector('canvas');
-        if (canvasEl) {
-          const mimeType = extension === 'jpg' ? 'image/jpeg' : 'image/png';
-          const dataUrl = canvasEl.toDataURL(mimeType, 1.0);
-          const link = document.createElement('a');
-          link.href = dataUrl;
-          link.download = `${safeName}_qr.${extension === 'jpg' ? 'jpg' : 'png'}`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-        document.body.removeChild(offscreen);
+      // Reliable Download via getRawData and file-saver
+      const blob = await hiRes.getRawData(extension);
+      const outName = `${safeName}_qr.${extension}`;
+
+      if (blob) {
+        triggerDownload(blob, outName);
       }
     } catch (err) {
       console.error('QR export failed:', err);
@@ -296,8 +271,19 @@ const VCardGenerator = () => {
   const handleFileChange = (e, key) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // SECURITY: Limit logo size to 2MB to prevent browser freezing
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Logo is too large! Please use an image under 2MB.");
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onloadend = () => update(key, reader.result);
+    reader.onloadend = () => {
+      update(key, reader.result);
+      // Automatically refresh the QR if it has already been generated
+      if (qrGenerated) refreshQR(reader.result);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -314,14 +300,14 @@ const VCardGenerator = () => {
   ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 lg:p-12 space-y-10 mt-16 lg:mt-0">
+    <div className="w-full max-w-6xl mx-auto p-6 lg:p-12 space-y-10 mt-16 lg:mt-12">
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-4 py-1.5 rounded-full">
           <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-green-400">Privacy-First • 100% Client-Side</span>
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-green-400">Privacy-First • 100% Client-Side</span>
         </div>
-        <h2 className="text-4xl lg:text-5xl font-black text-white">vCard QR Generator</h2>
-        <p className="text-white/40 max-w-lg mx-auto">Create a scannable contact card. No data leaves your browser.</p>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">vCard QR Generator</h2>
+        <p className="text-white/40 text-sm sm:text-base max-w-lg mx-auto">Create a scannable contact card. No data leaves your browser.</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12 items-start">
@@ -414,8 +400,8 @@ const VCardGenerator = () => {
               <>
                 <div
                   ref={qrRef}
-                  className="bg-white p-3 rounded-2xl shadow-inner overflow-hidden"
-                  style={{ width: 280, height: 280, flexShrink: 0 }}
+                  className="bg-white p-3 rounded-2xl shadow-inner overflow-hidden flex items-center justify-center max-w-full"
+                  style={{ width: 'min(100%, 280px)', height: 'min(100%, 280px)', aspectRatio: '1/1', flexShrink: 0 }}
                 />
                 <div className="text-center space-y-1">
                   <p className="text-white font-bold text-lg">{form.fullName}</p>

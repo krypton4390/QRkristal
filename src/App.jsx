@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy, useEffect } from 'react';
 import QRCodePreview from './components/QRCodePreview';
 import CustomizationPanel from './components/CustomizationPanel';
 import FAQSection from './components/FAQSection';
@@ -16,11 +16,15 @@ function App() {
   const [logo, setLogo] = useState(null);
   const [qrStyle, setQrStyle] = useState('rounded');
 
+  useEffect(() => {
+    // Mode-specific side effects can go here
+  }, [mode]);
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#050505] text-white font-sans selection:bg-white selection:text-black scroll-smooth">
       <div className="flex flex-col lg:flex-row lg:h-screen w-full overflow-hidden shrink-0">
         {/* Main Content Area */}
-        <main className={`flex-1 relative flex flex-col items-center ${mode === 'vcard' ? 'justify-start overflow-y-auto' : 'justify-center overflow-hidden'} p-6 lg:p-12 min-h-[100dvh] lg:min-h-0`}>
+        <main className={`flex-1 relative flex flex-col items-center ${mode === 'vcard' ? 'justify-start overflow-y-auto' : 'justify-center overflow-hidden'} p-6 lg:p-12 pt-40 sm:pt-48 lg:pt-24 min-h-[100dvh] lg:min-h-0`}>
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 rounded-full blur-[150px]" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[120px]" />
@@ -29,22 +33,22 @@ function App() {
           </div>
 
           {/* Top Navigation / Brand */}
-          <div className="absolute top-6 left-6 lg:top-10 lg:left-12 flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-12 z-50">
+          <div className="absolute top-8 left-0 right-0 lg:left-12 lg:right-auto flex flex-col lg:flex-row items-center lg:items-center gap-6 lg:gap-12 z-50 px-6 lg:px-0">
             <div className="flex items-center space-x-4">
-              <img src="/favicon.png" alt="QR Crystal Logo" className="w-12 h-12 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] object-contain" />
-              <div>
-                <h1 className="text-2xl font-black tracking-tight text-white">QR Code Generator</h1>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold -mt-1">by QR Crystal — Free Online Tool</p>
+              <img src="/favicon.png" alt="QR Crystal Logo" className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-[0_0_20px_rgba(255,255,255,0.1)] object-contain" />
+              <div className="text-center lg:text-left">
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white leading-none">QR Code Generator</h1>
+                <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold mt-1">by QR Crystal — Free Online Tool</p>
               </div>
             </div>
 
             {/* Mode Switcher */}
-            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md">
+            <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 backdrop-blur-md w-full sm:w-auto overflow-x-auto no-scrollbar">
               {['single', 'bulk', 'vcard'].map((m) => (
                 <button 
                   key={m}
                   onClick={() => setMode(m)}
-                  className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === m ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
+                  className={`flex-1 sm:flex-none px-4 sm:px-5 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-xl transition-all whitespace-nowrap ${mode === m ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
                 >
                   {m === 'vcard' ? 'vCard' : m.charAt(0).toUpperCase() + m.slice(1)}
                 </button>
