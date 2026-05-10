@@ -5,6 +5,7 @@ import FAQSection from './components/FAQSection';
 import TrustSection from './components/TrustSection';
 import ContentPillar from './components/ContentPillar';
 import VCardGenerator from './components/VCardGenerator';
+import VCardInfo from './components/VCardInfo';
 const BulkGenerator = lazy(() => import('./components/BulkGenerator'));
 
 function App() {
@@ -116,6 +117,7 @@ function App() {
           </div>
         </section>
 
+        <VCardInfo />
         <ContentPillar />
         <FAQSection />
         <TrustSection />
