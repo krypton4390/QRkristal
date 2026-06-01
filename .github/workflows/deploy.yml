@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pages: write      # Added for clean GitHub Pages integration
+  id-token: write  # Added for secure deployment authentication
 
 jobs:
   build-and-deploy:
@@ -26,3 +28,4 @@ jobs:
         with:
           folder: dist
           branch: gh-pages
+          cname: qrcrystal.xyz # <-- CRUCIAL: This automatically injects your domain so it never breaks!
