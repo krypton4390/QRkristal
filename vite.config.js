@@ -38,7 +38,7 @@ function debugLogFallbackPlugin() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './', // <-- This right here keeps asset paths relative for your custom domain
+  base: '/', // <-- CHANGED THIS from './' to '/' for your root custom domain
   plugins: [
     react(),
     tailwindcss(),
